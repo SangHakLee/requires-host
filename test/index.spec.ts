@@ -32,21 +32,21 @@ describe("mocking", () => {
         ).toBe(true);
     })
 
-    test(`when can't get version -> always return false`, () => {
+    test(`when can't get version -> always throw VersionException`, () => {
         (jest.spyOn(which, "sync") as jest.SpyInstance).mockImplementation(() => "/usr/bin/man");
         (jest.spyOn(child_process, "execSync") as jest.SpyInstance).mockImplementation(() => "invalid");
 
-        expect(
+        expect(() => {
             requires('man', '2.9.1', EQUAL)
-        ).toBe(false);
+        }).toThrow();
 
-        expect(
+        expect(() => {
             requires('man', '2.9.1', GREATER)
-        ).toBe(false);
+        }).toThrow();
 
-        expect(
+        expect(() => {
             requires('man', '2.9.1', LESS)
-        ).toBe(false);
+        }).toThrow();
     })
 
     test(`$ iptables-save -V
