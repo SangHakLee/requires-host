@@ -1,0 +1,14 @@
+name: 'CI'
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  test:
+    name: 'jest test'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm test
+

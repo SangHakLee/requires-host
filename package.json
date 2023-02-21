@@ -1,14 +1,15 @@
 {
-  "name": "requires-host",
+  "name": "requires-version",
   "version": "0.1.0",
   "type": "module",
-  "description": "host requires check",
+  "description": "requires dependency version check",
   "main": "index.js",
   "scripts": {
     "start:dev": "npx nodemon",
     "build": "rimraf ./build && tsc",
     "start": "npm run build && node build/index.js",
-    "test": "jest"
+    "test": "jest",
+    "coverage": "jest --collectCoverage --"
   },
   "author": "sanghaklee",
   "license": "MIT",
