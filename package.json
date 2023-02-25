@@ -3,16 +3,41 @@
   "version": "0.1.0",
   "type": "module",
   "description": "requires dependency version check",
-  "main": "index.js",
+  "main": "build/index.js",
   "scripts": {
     "start:dev": "npx nodemon",
-    "build": "rimraf ./build && tsc",
     "start": "npm run build && node build/index.js",
     "test": "jest",
-    "coverage": "jest --collectCoverage --"
+    "coverage": "jest --collectCoverage --",
+    "prepack": "npmignore --auto",
+    "build": "rimraf ./build && tsc"
   },
+  "keywords": [
+    "version"
+  ],
   "author": "sanghaklee",
   "license": "MIT",
+  "homepage": "https://github.com/SangHakLee/requires-version/blob/main/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SangHakLee/requires-version"
+  },
+  "bugs": {
+    "url": "https://github.com/SangHakLee/requires-version/issues"
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/SangHakLee"
+    }
+  ],
+  "publishConfig": {
+    "ignore": [
+      "!build/",
+      "src/",
+      "test/"
+    ]
+  },
   "devDependencies": {
     "@types/jest": "^29.4.0",
     "@types/node": "^18.14.0",
@@ -20,6 +45,7 @@
     "compare-versions": "^6.0.0-rc.1",
     "jest": "^29.4.3",
     "nodemon": "^2.0.20",
+    "npmignore": "^0.3.0",
     "rimraf": "^4.1.2",
     "ts-jest": "^29.0.5",
     "ts-node": "^10.9.1",

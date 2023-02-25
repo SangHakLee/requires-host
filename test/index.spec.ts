@@ -3,6 +3,25 @@ import child_process from 'child_process';
 
 import {LESS, GREATER, EQUAL, requires} from '../src';
 
+describe("requires", () => {
+    test(`requires('node1')`, () => {
+        (jest.spyOn(which, "sync") as jest.SpyInstance).mockImplementation(() => "/usr/bin/node1");
+
+        expect(
+            requires('node1')
+        ).toBe(true);
+    })
+
+    test(`requires('node1', '4.0.0', EQUAL | GREATER)`, () => {
+        (jest.spyOn(which, "sync") as jest.SpyInstance).mockImplementation(() => "/usr/bin/node1");
+        (jest.spyOn(child_process, "execSync") as jest.SpyInstance).mockImplementation(() => "v18.14.1");
+
+        expect(
+            requires('node1', '18.14.1', EQUAL)
+        ).toBe(true);
+    })
+});
+
 describe("only linux", () => {
     if (process.platform === "linux") {
         // do not mock

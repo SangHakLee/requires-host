@@ -27,6 +27,9 @@ const operators = [
 
 export const { LESS, GREATER, EQUAL } = Operator;
 
+export function requires(dependencyName: string, version: string, op: Operator): boolean;
+export function requires(dependencyName: string): boolean;
+
 /**
  * Get version comparison result
  * @param dependencyName dependency's name
@@ -35,11 +38,24 @@ export const { LESS, GREATER, EQUAL } = Operator;
  * @returns boolean
  * @throws VersionException
  */
-export const requires = (dependencyName: string, version: string, op: Operator): boolean => {
-    const dependencyVersion = getDependencyVersion(dependencyName);
-    const versionOperator = getVersionOperator(op);
+// export const requires = (dependencyName: string, version: string, op: Operator): boolean => {
+export function requires(dependencyName: any, version?: any, op?: any): boolean {
+    let dependencyPath = '';
+    let ealry = false;
 
-    // if (dependencyVersion == "") return false;
+    if (typeof version === 'undefined' && typeof op === 'undefined') {
+        ealry = true;
+    }
+
+    try {
+        dependencyPath = getDependencyPath(dependencyName);
+        if (ealry) return true;
+    } catch (e) {
+        if (ealry) return false;
+    }
+
+    const dependencyVersion = getDependencyVersion(dependencyPath);
+    const versionOperator = getVersionOperator(op);
 
     return compare(dependencyVersion, version, (versionOperator as CompareOperator));
 }
@@ -56,9 +72,22 @@ const getVersionOperator = (operator: Operator): string => {
     })
     if (!find) {
         throw new VersionException(`"${operator}" is invalid.`);
-        // return "";
     }
     return Object.values(find)[0];
+}
+
+/**
+ * Get dependency's execution path
+ * @param dependencyName dependency's name
+ * @returns path
+ * @throws VersionException
+ */
+const getDependencyPath = (dependencyName: string): string => {
+    try {
+        return which.sync(dependencyName);
+    } catch (error) {
+        throw new VersionException(`"${dependencyName}" not found.`);
+    }
 }
 
 /**
@@ -68,10 +97,10 @@ const getVersionOperator = (operator: Operator): string => {
  * @throws VersionException
  */
 const getDependencyVersion = (dependencyName: string): string => {
-    const binary = which.sync(dependencyName);
+    const dependencyPath = getDependencyPath(dependencyName);
 
     for (const argument of versionArguments) {
-        const versionCommand: string = `${binary} ${argument}`;
+        const versionCommand: string = `${dependencyPath} ${argument}`;
 
         try {
             const versionCandidate: string = execSync(versionCommand, {stdio: 'pipe'}).toString('utf8'); // stdio: 'pipe' => ignore stdio
@@ -81,8 +110,6 @@ const getDependencyVersion = (dependencyName: string): string => {
             const versionCandidateArray = versionCandidate.match(versionRegExp); // expect [ 'v1.8.4' ]
             if (!versionCandidateArray?.length) {
                 continue;
-                // return "";
-                // throw new VersionException(`"${dependencyName}" version not found.`);
             }
 
             const onlyVersion: string = versionCandidateArray[0].trim().replace(/^v/, '').trim();
@@ -91,6 +118,5 @@ const getDependencyVersion = (dependencyName: string): string => {
             continue;
         }
     }
-    // return "";
     throw new VersionException(`"${dependencyName}" version not found.`);
 }
